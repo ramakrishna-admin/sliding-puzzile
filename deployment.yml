@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: sliding-puzzle
+spec:
+  replicas: 4
+  selector: 
+    matchLabels: 
+      apps: puzzle
+  template:
+    metadata:
+      labels:
+        apps: puzzle
+   spec:
+     containers:
+       - name: puzzle-count
+         image: ramakrishna737/s-puzzle-P/v1
+       ports:
+       - containerPorts:: 3000
