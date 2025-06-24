@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #puzzle {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      font-size: 32px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .tile:hover {
+      transform: scale(1.05);
+    }
+
+    .empty {
+      background-color: #ccc;
+      cursor: default;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2196f3;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1976d2;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Sliding Puzzle Game</h1>
+<div id="puzzle"></div>
+<div id="message"></div>
+<button onclick="shuffleTiles()">Shuffle</button>
+
+<script>
+  const puzzle = document.getElementById('puzzle');
+  const message = document.getElementById('message');
+  let tiles = [];
+
+  function initPuzzle() {
+    tiles = [1, 2, 3, 4, 5, 6, 7, 8, null]; // last is empty
+    renderTiles();
+  }
+
+  function renderTiles() {
+    puzzle.innerHTML = '';
+    tiles.forEach((num, index) => {
+      const tile = document.createElement('div');
+      tile.classList.add('tile');
+      if (num === null) {
+        tile.classList.add('empty');
+      } else {
+        tile.textContent = num;
+        tile.onclick = () => moveTile(index);
+      }
+      puzzle.appendChild(tile);
+    });
+  }
+
+  function moveTile(index) {
+    const emptyIndex = tiles.indexOf(null);
+    const validMoves = [index - 1, index + 1, index - 3, index + 3];
+
+    if (
+      validMoves.includes(emptyIndex) &&
+      !(index % 3 === 2 && emptyIndex === index + 1) &&
+      !(index % 3 === 0 && emptyIndex === index - 1)
+    ) {
+      [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
+      renderTiles();
+      checkWin();
+    }
+  }
+
+  function checkWin() {
+    const win = [1, 2, 3, 4, 5, 6, 7, 8, null];
+    if (JSON.stringify(tiles) === JSON.stringify(win)) {
+      message.textContent = '🎉 You solved the puzzle!';
+    } else {
+      message.textContent = '';
+    }
+  }
+
+  function shuffleTiles() {
+    do {
+      tiles = [1, 2, 3, 4, 5, 6, 7, 8, null].sort(() => Math.random() - 0.5);
+    } while (!isSolvable(tiles));
+    renderTiles();
+    message.textContent = '';
+  }
+
+  function isSolvable(arr) {
+    const copy = arr.filter(n => n !== null);
+    let invCount = 0;
+    for (let i = 0; i < copy.length; i++) {
+      for (let j = i + 1; j < copy.length; j++) {
+        if (copy[i] > copy[j]) invCount++;
+      }
+    }
+    return invCount % 2 === 0;
+  }
+
+  initPuzzle();
+</script>
+
+</body>
+</html>
