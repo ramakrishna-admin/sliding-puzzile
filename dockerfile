@@ -2,10 +2,6 @@ FROM nodejs
 
 WORKDIR  /apps
 
-COPY  package*.json ./
-
-RUN npm install
-
-copy . .
+copy . ./
 
 EXPOSE 3000
